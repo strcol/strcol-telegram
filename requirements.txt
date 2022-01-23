@@ -1,3 +1,4 @@
-pymongo==3.11.3
-pyTelegramBotAPI==3.7.7
-requests==2.25.1
+colorama>=0.4.4
+pymongo>=4.0.1
+pyTelegramBotAPI>=4.3.1
+requests>=2.27.1

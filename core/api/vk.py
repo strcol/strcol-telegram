@@ -3,6 +3,9 @@ import json
 
 import requests
 
+import config
+import core.logger
+
 
 class VKAttachment:
     def __init__(self, raw):
@@ -90,7 +93,9 @@ class VKPost:
         processed_attachments = []
         first = True
         for attachment in data['attachments']:
-            if attachment['type'] in ('video', 'poll', 'link'):
+            if not attachment.get('type'):
+                continue
+            if attachment.get('type') in ('video', 'poll', 'link'):
                 if data['text']:
                     data['text'] += ('\n\n' if first else '\n')
                     data['text'] += attachment['url']
@@ -106,20 +111,20 @@ class VKPost:
 
 
 class Client:
-    def __init__(self, config):
-        self.config = config
-
     def get_posts(self):
-        response = requests.post(
+        response = requests.get(
             'https://api.vk.com/method/wall.get',
-            data={
+            params={
                 'count': 100,
-                'owner_id': self.config.get('VK_SOURCE_ID'),
-                'v': self.config.get('VK_API_VERSION'),
-                'access_token': self.config.get('VK_API_TOKEN')
+                'owner_id': config.VK_SOURCE_ID,
+                'v': config.VK_API_VERSION,
+                'access_token': config.VK_API_TOKEN
             }
         ).json()
         if not response.get('response'):
+            core.logger.LOGGER_INSTANCE.error(
+                f'Unable to retrieve posts from VK: {response}'
+            )
             return []
         return [
             VKPost(item).parse()

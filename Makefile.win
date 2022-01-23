@@ -1,0 +1,6 @@
+install: requirements.txt
+    py -3 -m venv venv
+    venv\Scripts\pip3.exe install -r requirements.txt
+
+run: venv
+    venv\Scripts\python.exe -B app.py
